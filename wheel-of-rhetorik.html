@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheel of Rhetorik – Einfluss Elitetraining</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+
+  :root {
+    --gold: #B8952A;
+    --gold-light: #d4ae4a;
+    --gold-dim: rgba(184,149,42,0.15);
+    --navy: #0D1B2A;
+    --navy-mid: #132230;
+    --navy-light: #1a2d40;
+    --navy-border: #243548;
+    --text: #f0ece4;
+    --text-muted: #7a8a9a;
+    --good: #5a9e78;
+    --mid: #c8933a;
+    --low: #9e4a3a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 0%, rgba(184,149,42,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(13,27,42,0.8) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 2rem 3rem;
+    border-bottom: 1px solid var(--navy-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .brand-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .header-right {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .gold-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 0.5rem;
+    margin-left: auto;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* INPUT SCREEN */
+  .input-layout {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  .page-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .page-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 520px;
+  }
+
+  /* Gold divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--navy-border);
+  }
+  .divider span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    padding: 1rem 1.25rem;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .skill-row:hover { background: var(--navy-light); }
+  .skill-row.filled {
+    border-color: rgba(184,149,42,0.35);
+    background: var(--navy-light);
+  }
+
+  .skill-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .score-display {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    min-width: 2.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .score-display.has-value { color: var(--gold); }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 180px;
+    height: 2px;
+    background: var(--navy-border);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+    border: 2px solid var(--navy);
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+    border: 2px solid var(--navy);
+  }
+  .skill-row.filled input[type="range"] {
+    background: linear-gradient(to right, var(--gold) var(--val, 0%), var(--navy-border) var(--val, 0%));
+  }
+
+  .cta-area {
+    margin-top: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .btn-primary {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--gold);
+    border: none;
+    padding: 0.9rem 2.5rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled {
+    background: var(--navy-border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .counter-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .counter-label span { color: var(--gold); font-weight: 700; }
+
+  /* RESULT SCREEN */
+  .result-layout {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  .result-header {
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .result-title em { font-style: italic; color: var(--gold); }
+
+  .overall-score { text-align: right; }
+  .overall-score .number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .overall-score .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 680px) {
+    .result-grid { grid-template-columns: 1fr; }
+    input[type="range"] { width: 120px; }
+    header { padding: 1.25rem 1.5rem; flex-direction: column; gap: 1rem; align-items: flex-start; }
+    .header-right { display: none; }
+    .page-title { font-size: 1.5rem; }
+  }
+
+  /* SPIDER CHART */
+  .chart-wrap {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    align-self: flex-start;
+  }
+  canvas#spider { max-width: 100%; }
+
+  /* POTENZIAL CARDS */
+  .potenzial-col {}
+  .pot-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    border-left: 3px solid var(--gold);
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .pot-card.visible { opacity: 1; transform: translateX(0); }
+
+  .pot-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+  .pot-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .pot-score-badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .pot-bar-wrap {
+    height: 2px;
+    background: var(--navy-border);
+    margin-bottom: 0.75rem;
+  }
+  .pot-bar {
+    height: 100%;
+    background: var(--gold);
+    width: 0;
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pot-text {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .pot-text strong { color: var(--text); font-weight: 500; }
+
+  /* BAR LIST */
+  .bar-list {
+    margin-top: 2rem;
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    padding: 1.5rem;
+  }
+  .bar-item {
+    display: grid;
+    grid-template-columns: 190px 1fr 2.5rem;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  @media (max-width: 560px) {
+    .bar-item { grid-template-columns: 130px 1fr 2rem; }
+  }
+  .bar-item-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    height: 2px;
+    background: var(--navy-border);
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bar-val {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .score-tag {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.45rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+  .tag-gut { background: rgba(90,158,120,0.15); color: var(--good); }
+  .tag-mid { background: rgba(200,147,58,0.15); color: var(--mid); }
+  .tag-low { background: rgba(158,74,58,0.15); color: #c96a56; }
+
+  .btn-reset {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--navy-border);
+    padding: 0.65rem 1.5rem;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    margin-top: 2rem;
+    display: inline-block;
+  }
+  .btn-reset:hover { color: var(--gold); border-color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="brand">
+      <span class="brand-name">Einfluss Elitetraining</span>
+      <span class="brand-sub">Rhetorik · Kommunikation · Führung</span>
+    </div>
+    <div class="header-right">
+      <span class="gold-line"></span>
+      Selbstanalyse-Tool
+    </div>
+  </header>
+
+  <!-- INPUT SCREEN -->
+  <div id="screen-input" class="screen active">
+    <div class="input-layout">
+      <h1 class="page-title">Wheel of <em>Rhetorik</em></h1>
+      <p class="page-subtitle">Bewerte jede Kompetenz auf einer Skala von 0 bis 10. Sei präzise und ehrlich – nur so zeigt die Analyse, wo dein größtes Entwicklungspotenzial liegt.</p>
+
+      <div class="divider"><span>Selbstbewertung</span></div>
+
+      <div class="skills-grid" id="skills-grid"></div>
+
+      <div class="cta-area">
+        <button class="btn-primary" id="btn-auswerten" disabled>Analyse starten</button>
+        <span class="counter-label"><span id="filled-count">0</span> / 9 bewertet</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <div class="result-layout">
+      <div class="result-header">
+        <div>
+          <div class="result-title">Deine <em>Rhetorik-</em>Analyse</div>
+        </div>
+        <div class="overall-score">
+          <div class="number" id="overall-num">–</div>
+          <div class="label">Ø Gesamtscore / 10</div>
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="chart-wrap">
+          <div class="section-label">Wheel of Rhetorik</div>
+          <canvas id="spider" width="400" height="400"></canvas>
+        </div>
+        <div class="potenzial-col">
+          <div class="section-label" style="margin-bottom:1.25rem;">Top 3 Entwicklungspotenziale</div>
+          <div id="pot-cards"></div>
+        </div>
+      </div>
+
+      <div class="bar-list">
+        <div class="section-label" style="margin-bottom:1.25rem;">Alle Bereiche im Überblick</div>
+        <div id="bar-list-inner"></div>
+      </div>
+
+      <button class="btn-reset" id="btn-reset">↩ Neu bewerten</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SKILLS = [
+  { id: 'koerpersprache', label: 'Körpersprache' },
+  { id: 'stimme', label: 'Stimme & Wirkung' },
+  { id: 'mimik', label: 'Mimik & Gestik' },
+  { id: 'wording', label: 'Wording & Struktur' },
+  { id: 'fuellaute', label: 'Fülllaute & Füllwörter' },
+  { id: 'nervositaet', label: 'Nervosität & Blackout' },
+  { id: 'gf', label: 'GF überzeugen' },
+  { id: 'praesentieren', label: 'Präsentieren & Pitchen' },
+  { id: 'verhandeln', label: 'Verhandeln' },
+];
+
+const POTENZIAL_TEXTS = {
+  koerpersprache: {
+    low: 'Körpersprache wirkt bevor du einen Satz gesagt hast. Standfestigkeit, offene Haltung, gezielte Bewegung – das sind die Grundpfeiler. Hier liegt erheblicher Hebel.',
+    mid: 'Deine Körpersprache hat Substanz, aber noch Luft nach oben. Übe bewusste Positionen vor dem Spiegel – besonders beim Einstieg in Präsentationen.',
+    high: 'Solide Basis. Feintuning: Wie setzt du Pausen körperlich ein? Wie nutzt du Raum bewusst für Autorität und Präsenz?',
+  },
+  stimme: {
+    low: 'Stimme ist eines der unterschätztesten Führungsinstrumente. Tonlage, Tempo, Pausen – hier liegt enormes Potenzial für sofortige Wirkungssteigerung.',
+    mid: 'Du hast eine Basis, aber noch zu wenig Varianz. Bewusste Pausen und gezielte Betonungsmuster sind der nächste Schritt.',
+    high: 'Gute Stimmkompetenz. Der nächste Level: situative Anpassung – Boardroom vs. großes Publikum vs. Einzelgespräch.',
+  },
+  mimik: {
+    low: 'Mimik & Gestik verstärken jede Botschaft – oder sabotieren sie. Kongruenz zwischen Wort und Körper ist die Grundvoraussetzung für Glaubwürdigkeit.',
+    mid: 'Deine Gesten sind vorhanden, aber noch nicht zielgerichtet. Arbeite an Kongruenz: Was sagt dein Gesicht während du sprichst?',
+    high: 'Du kommunizierst nonverbal gut. Verfeinere den bewussten Einsatz bei emotionalen Kernaussagen und in kritischen Momenten.',
+  },
+  wording: {
+    low: 'Wording & Struktur ist das Fundament jeder Argumentation. Ohne klare Struktur keine Überzeugung – egal wie stark die Körpersprache ist.',
+    mid: 'Deine Struktur funktioniert, aber reißt noch nicht mit. Argumentationsrahmen wie Problem-Solution-Benefit konsequent anwenden.',
+    high: 'Gute Struktur. Nächste Stufe: sprachliche Präzision und kraftvolle Formulierungen – weg von Weichspülern wie "eigentlich" und "ich würde sagen".',
+  },
+  fuellaute: {
+    low: 'Fülllaute zerstören Autorität. Jedes "ähm", "halt", "irgendwie" schwächt deine Wirkung messbar. Das ist eines der dringlichsten Felder.',
+    mid: 'Bewusstsein ist vorhanden – aber die Muster sitzen tief. Aufnahmen und gezielte Feedbackschleifen bringen hier den Durchbruch.',
+    high: 'Kaum Fülllaute – eine echte Stärke. Fokus jetzt auf die verbleibenden Gewohnheiten in Hochdrucksituationen.',
+  },
+  nervositaet: {
+    low: 'Nervosität kostet dich genau in den Momenten, in denen es am meisten zählt. Das ist vollständig trainierbar – durch Routine, Atemtechniken und gezielte Exposition.',
+    mid: 'Du hast die Nervosität nicht vollständig im Griff. Mehr Auftritte, mehr Übung. Es gibt keinen anderen Weg als den durch die Situation.',
+    high: 'Du bleibst in den meisten Situationen stabil. Trainiere jetzt Extremsituationen: feindliches Publikum, unerwartete Einwände, Zeitdruck.',
+  },
+  gf: {
+    low: 'Entscheidungsträger zu überzeugen erfordert eine andere Sprache: Zahlen, Risiken, strategischer Nutzen – Bottom-Line up Front. Das ist eine eigene Disziplin.',
+    mid: 'Du kennst die Grundregeln, aber noch zu wenig exekutive Präzision. Ergebnis zuerst, Details danach – konsequent.',
+    high: 'Du überzeugst auf Führungsebene gut. Nächste Stufe: narratives Storytelling kombiniert mit klaren Kennzahlen und Risiko-Framing.',
+  },
+  praesentieren: {
+    low: 'Präsentieren & Pitchen ist die direkte Einfluss-Bühne. Aktuell verlierst du hier Wirkung und Chancen – das lässt sich direkt und schnell verbessern.',
+    mid: 'Deine Präsentationen funktionieren, aber begeistern noch nicht. Stärkere Einstiege, klarere Calls-to-Action – das macht den Unterschied.',
+    high: 'Solides Niveau. Arbeite an Tempo-Kontrolle und dem gezielten Einsatz von Stille als Wirkungsmittel.',
+  },
+  verhandeln: {
+    low: 'Verhandeln hat direkten Impact auf Ergebnisse. Lerne systematische Verhandlungsführung als Basis – Improvisation ist kein Ersatz für Methode.',
+    mid: 'Du verhandelst intuitiv, aber ohne System. Ein klares Framework gibt dir deutlich mehr Ergebnissicherheit in schwierigen Situationen.',
+    high: 'Gute Verhandlungskompetenz. Nächste Stufe: strategisches Schweigen, bewusstes Verankern von Ausgangspositionen, Umgang mit Drucktaktiken.',
+  },
+};
+
+function getPotText(id, score) {
+  const t = POTENZIAL_TEXTS[id];
+  if (!t) return '';
+  if (score <= 3) return t.low;
+  if (score <= 6) return t.mid;
+  return t.high;
+}
+
+function getColor(score) {
+  if (score >= 7) return '#5a9e78';
+  if (score >= 4) return '#B8952A';
+  return '#c96a56';
+}
+
+function getTag(score) {
+  if (score >= 7) return '<span class="score-tag tag-gut">Stärke</span>';
+  if (score >= 4) return '<span class="score-tag tag-mid">Aufbau</span>';
+  return '<span class="score-tag tag-low">Potenzial</span>';
+}
+
+// Build input grid
+const grid = document.getElementById('skills-grid');
+const scores = {};
+
+SKILLS.forEach(skill => {
+  scores[skill.id] = null;
+  const row = document.createElement('div');
+  row.className = 'skill-row';
+  row.id = 'row-' + skill.id;
+  row.innerHTML = `
+    <span class="skill-label">${skill.label}</span>
+    <input type="range" min="0" max="10" step="1" value="0" id="range-${skill.id}" style="--val:0%">
+    <span class="score-display" id="disp-${skill.id}">–</span>
+  `;
+  grid.appendChild(row);
+
+  const range = row.querySelector('input[type="range"]');
+  const disp = row.querySelector('.score-display');
+
+  function markFilled(val) {
+    scores[skill.id] = val;
+    const pct = (val / 10 * 100).toFixed(1) + '%';
+    range.style.setProperty('--val', pct);
+    disp.textContent = val;
+    disp.classList.add('has-value');
+    row.classList.add('filled');
+    updateCounter();
+  }
+
+  range.addEventListener('input', () => markFilled(parseInt(range.value)));
+  range.addEventListener('click', () => {
+    if (scores[skill.id] === null) markFilled(parseInt(range.value));
+  });
+});
+
+function updateCounter() {
+  const filled = Object.values(scores).filter(v => v !== null).length;
+  document.getElementById('filled-count').textContent = filled;
+  document.getElementById('btn-auswerten').disabled = filled < 9;
+}
+
+document.getElementById('btn-auswerten').addEventListener('click', showResult);
+document.getElementById('btn-reset').addEventListener('click', resetAll);
+
+function resetAll() {
+  SKILLS.forEach(s => {
+    scores[s.id] = null;
+    const range = document.getElementById('range-' + s.id);
+    const disp = document.getElementById('disp-' + s.id);
+    const row = document.getElementById('row-' + s.id);
+    range.value = 0;
+    range.style.setProperty('--val', '0%');
+    disp.textContent = '–';
+    disp.classList.remove('has-value');
+    row.classList.remove('filled');
+  });
+  updateCounter();
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-input').classList.add('active');
+}
+
+function showResult() {
+  document.getElementById('screen-input').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+  const vals = SKILLS.map(s => scores[s.id]);
+  const avg = (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+  document.getElementById('overall-num').textContent = avg;
+  drawSpider(vals);
+  renderPotCards(vals);
+  renderBarList(vals);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ---- SPIDER CHART ----
+function drawSpider(vals) {
+  const canvas = document.getElementById('spider');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(W, H) * 0.36;
+  const n = SKILLS.length;
+  const labels = SKILLS.map(s => s.label);
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, W, H);
+    const rings = 5;
+    for (let r = 1; r <= rings; r++) {
+      const radius = R * (r / rings);
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = r === rings ? '#243548' : '#1a2d40';
+      ctx.lineWidth = r === rings ? 1.5 : 0.8;
+      ctx.stroke();
+    }
+    // Ring value labels
+    ctx.fillStyle = '#3a5068';
+    ctx.font = '700 10px Barlow Condensed, sans-serif';
+    ctx.textAlign = 'center';
+    for (let r = 1; r <= rings; r++) {
+      const radius = R * (r / rings);
+      ctx.fillText(r * 2, cx + (radius + 9) * Math.cos(-Math.PI/2), cy + (radius + 9) * Math.sin(-Math.PI/2) + 4);
+    }
+    // Spokes
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+      ctx.strokeStyle = '#1e3248'; ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+
+  function drawData(progress) {
+    drawFrame();
+    // Filled polygon
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+      const v = vals[i] / 10 * progress;
+      const r = R * v;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(184,149,42,0.12)';
+    ctx.fill();
+    ctx.strokeStyle = '#B8952A';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Dots
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+      const v = vals[i] / 10 * progress;
+      const r = R * v;
+      ctx.beginPath();
+      ctx.arc(cx + r * Math.cos(angle), cy + r * Math.sin(angle), 4, 0, 2 * Math.PI);
+      ctx.fillStyle = '#B8952A'; ctx.fill();
+      ctx.strokeStyle = '#0D1B2A'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    // Labels
+    const labelR = R + 30;
+    ctx.font = '600 10px Barlow Condensed, sans-serif';
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+      const x = cx + labelR * Math.cos(angle);
+      const y = cy + labelR * Math.sin(angle);
+      ctx.textAlign = Math.abs(Math.cos(angle)) < 0.1 ? 'center' : (Math.cos(angle) > 0 ? 'left' : 'right');
+      ctx.textBaseline = Math.abs(Math.sin(angle)) < 0.1 ? 'middle' : (Math.sin(angle) > 0 ? 'top' : 'bottom');
+      ctx.fillStyle = '#a0b0c0';
+      const lbl = labels[i].toUpperCase();
+      const parts = lbl.split(' & ');
+      if (parts.length > 1) {
+        ctx.fillText(parts[0] + ' &', x, y - 6);
+        ctx.fillText(parts[1], x, y + 6);
+      } else {
+        ctx.fillText(lbl, x, y);
+      }
+    }
+  }
+
+  let start = null;
+  const duration = 900;
+  function animate(ts) {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    drawData(ease);
+    if (p < 1) requestAnimationFrame(animate);
+    else drawData(1);
+  }
+  requestAnimationFrame(animate);
+}
+
+// ---- POTENZIAL CARDS ----
+function renderPotCards(vals) {
+  const sorted = SKILLS.map((s, i) => ({ ...s, score: vals[i] })).sort((a, b) => a.score - b.score).slice(0, 3);
+  const container = document.getElementById('pot-cards');
+  container.innerHTML = '';
+  sorted.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'pot-card';
+    const pct = (s.score / 10 * 100).toFixed(0);
+    card.innerHTML = `
+      <div class="pot-rank">#${idx + 1} · Größtes Potenzial</div>
+      <div class="pot-name">${s.label}<span class="pot-score-badge">${s.score}/10</span></div>
+      <div class="pot-bar-wrap"><div class="pot-bar" data-pct="${pct}"></div></div>
+      <div class="pot-text">${getPotText(s.id, s.score)}</div>
+    `;
+    container.appendChild(card);
+    setTimeout(() => {
+      card.classList.add('visible');
+      setTimeout(() => { card.querySelector('.pot-bar').style.width = pct + '%'; }, 100);
+    }, idx * 160);
+  });
+}
+
+// ---- BAR LIST ----
+function renderBarList(vals) {
+  const container = document.getElementById('bar-list-inner');
+  container.innerHTML = '';
+  const sorted = SKILLS.map((s, i) => ({ ...s, score: vals[i] })).sort((a, b) => b.score - a.score);
+  sorted.forEach((s, idx) => {
+    const pct = (s.score / 10 * 100).toFixed(0);
+    const color = getColor(s.score);
+    const tag = getTag(s.score);
+    const item = document.createElement('div');
+    item.className = 'bar-item';
+    item.innerHTML = `
+      <span class="bar-item-label">${s.label}${tag}</span>
+      <div class="bar-track"><div class="bar-fill" style="background:${color}"></div></div>
+      <span class="bar-val" style="color:${color}">${s.score}</span>
+    `;
+    container.appendChild(item);
+    setTimeout(() => { item.querySelector('.bar-fill').style.width = pct + '%'; }, 300 + idx * 60);
+  });
+}
+</script>
+</body>
+</html>
